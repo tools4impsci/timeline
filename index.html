@@ -6,81 +6,61 @@
     <title>Life & Career Trajectory | C.M. Antonaccio</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
+
+    <script>
+      window.onerror = function(message, source, lineno, colno, error) {
+        document.body.innerHTML += `<div style="color:red; padding:20px; font-family:monospace; background:#ffe6e6; border-bottom:1px solid #ffcccc;">
+          <strong>Error:</strong> ${message}<br>
+          <small>${source}:${lineno}</small>
+        </div>`;
+      };
+    </script>
+
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
 
     <style>
-        .custom-scrollbar::-webkit-scrollbar {
-            height: 8px;
-            background-color: #f1f5f9;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background-color: #94a3b8;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Prevent body scroll, let component handle it */
-        }
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; background-color: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+        body { margin: 0; padding: 0; overflow: hidden; background: white; }
+        #root { height: 100vh; display: flex; flex-direction: column; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <script type="text/babel">
-        // 1. Setup Dependencies from Global Scope
-        const { useState, useMemo, useRef, useEffect } = React;
-        
-        // Destructure Lucide icons from the global window object
-        const { 
-          Baby, MapPin, Activity, Stethoscope, HeartPulse, Brain, 
-          GraduationCap, BookOpen, Code, Briefcase, Info, X, Scissors,
-          User, Calendar, Search, Minus, Plus, RefreshCw, Heart,
-          ArrowRight, Star, Anchor, Pill, Syringe
-        } = window.lucideReact;
+    <script type="text/babel" data-type="module">
+        import React, { useState, useMemo, useRef, useEffect } from 'https://esm.sh/react@18.2.0';
+        import { createRoot } from 'https://esm.sh/react-dom@18.2.0/client';
+        import { 
+          Baby, MapPin, Activity, Brain, User, Calendar, 
+          Minus, Plus, RefreshCw, Heart, Scissors, Pill, Briefcase, X 
+        } from 'https://esm.sh/lucide-react@0.263.1';
 
-        // 2. Main Component
         const LifeTimeline = () => {
           const [selectedEvent, setSelectedEvent] = useState(null);
           const [hoveredEventId, setHoveredEventId] = useState(null);
           const scrollContainerRef = useRef(null);
           
-          // --- ZOOM STATE ---
           const [zoomLevel, setZoomLevel] = useState(55); 
-
-          // Configuration
           const startYear = 1994;
           const endYear = 2027; 
           const totalYears = endYear - startYear;
 
-          // --- INITIAL SCROLL EFFECT ---
           useEffect(() => {
             if (scrollContainerRef.current) {
               const yearsFromStart = 2004 - startYear;
-              const scrollPos = yearsFromStart * 55;
-              scrollContainerRef.current.scrollLeft = scrollPos;
+              scrollContainerRef.current.scrollLeft = yearsFromStart * 55;
             }
           }, []);
 
-          // --- DATA PROCESSING HELPERS ---
           const getDecimalYear = (yearStr, monthStr) => {
             if (!yearStr) return 0;
             let year = parseInt(yearStr);
-            
             if (yearStr === 'Present') {
                 const now = new Date();
                 return now.getFullYear() + (now.getMonth() / 12);
             }
-            
             if (!monthStr) return year;
             const months = {
               'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'June': 5, 
@@ -118,7 +98,7 @@
             },
             { 
               id: 21, year: '2017', month: 'Mar', endYear: '2018', endMonth: 'Feb', title: 'Caregiving (Mom)', 
-              description: 'Primary caregiver for my mother during her treatment at MSK. This experience provided a profound dual-perspective on the patient-family unit within the same hospital system where I was treated.', category: 'life', type: 'range' 
+              description: 'Primary caregiver for my mother during her treatment at MSK.', category: 'life', type: 'range' 
             },
             { 
               id: 22, year: '2018', month: 'Feb', title: 'Mom\'s Passing', 
@@ -128,4 +108,259 @@
 
             // --- SURGERIES TRACK ---
             { 
-              id: 6, year: '2005', month: 'Oct', title: 'Limb Salvage',
+              id: 6, year: '2005', month: 'Oct', title: 'Limb Salvage', 
+              description: 'Full resection and reconstruction of left femur.', category: 'surgeries', icon: <Scissors size={12} />, type: 'surgery',
+              labelPlacement: 'bottom-left'
+            },
+            { 
+              id: 19, year: '2006', month: 'Aug', title: 'Limb Revision', 
+              description: 'Second limb reconstruction surgery.', category: 'surgeries', icon: <Scissors size={12} />, type: 'surgery',
+              labelPlacement: 'top-right'
+            },
+            { 
+              id: 9, year: '2010', month: 'July', title: 'Brain Surgery', 
+              description: 'Tumor resection and right temporal lobectomy.', category: 'surgeries', icon: <Scissors size={12} />, type: 'surgery',
+              labelPlacement: 'bottom-right'
+            },
+
+            // --- THERAPIES TRACK ---
+            { 
+              id: 5, year: '2005', month: 'Aug', endYear: '2006', endMonth: 'Mar', title: 'Chemo Regimen 1', 
+              description: 'Intensive chemotherapy regimen (Cisplatin, Methotrexate, Doxorubicin).', category: 'therapies', type: 'range' 
+            },
+            { 
+              id: 7, year: '2007', endYear: '2010', title: 'No Evidence of Disease', 
+              description: 'Period of No Evidence of Disease (NED).', category: 'therapies', type: 'range', style: 'dashed' 
+            },
+            { 
+              id: 10, year: '2010', month: 'Aug', endYear: '2010', endMonth: 'Oct', title: 'Radiation', 
+              description: 'High-dose radiation treatment.', category: 'therapies', type: 'range' 
+            },
+            { 
+              id: 11, year: '2010', month: 'Aug', endYear: '2011', endMonth: 'Aug', title: 'Temozolomide', 
+              description: 'Year-long chemotherapy course.', category: 'therapies', type: 'range' 
+            },
+            { 
+              id: 23, year: '2012', endYear: 'Present', title: 'No Evidence of Disease', 
+              description: 'Extended period of No Evidence of Disease (NED).', category: 'therapies', type: 'range', style: 'dashed' 
+            },
+
+            // --- CAREER TRACK ---
+            { 
+              id: 13, year: '2012', endYear: '2016', title: 'Penn State', 
+              location: 'State College, PA', description: 'BS in Health Policy, BA in African Studies.', category: 'career', type: 'range' 
+            },
+            { 
+              id: 15, year: '2016', endYear: '2018', title: 'MSPH (Hopkins)', 
+              location: 'Baltimore, MD', description: 'Master of Science in Public Health.', category: 'career', type: 'range' 
+            },
+            { 
+              id: 16, year: '2018', endYear: '2022', title: 'PhD (Boston College)', 
+              location: 'Chestnut Hill, MA', description: 'PhD in Social Work.', category: 'career', type: 'range' 
+            },
+            { 
+              id: 17, year: '2022', endYear: '2023', title: 'UNU Fellow', 
+              location: 'Macau', description: 'Fellowship at United Nations University.', category: 'career', type: 'range' 
+            },
+            { 
+              id: 18, year: '2023', endYear: '2026', endMonth: 'July', title: 'Postdoc (Brown)', 
+              location: 'Providence, RI', description: 'Clinical Psychology & Implementation Science Fellow.', category: 'career', type: 'range' 
+            }
+          ];
+
+          const PALETTE = {
+            life: { main: '#00558C', light: '#E1F5FE', border: '#81D4FA', label: 'Life Events' },
+            surgeries: { main: '#D84315', light: '#FBE9E7', border: '#FFAB91', label: 'Surgeries' },
+            therapies: { main: '#00838F', light: '#E0F7FA', border: '#80DEEA', label: 'Therapies' },
+            career: { main: '#F26522', light: '#FFF3E0', border: '#FFCCBC', label: 'Career' }
+          };
+
+          const tracks = [
+            { id: 'life', label: 'Life', subtitle: 'Events & Periods', icon: <User size={16} />, bg: 'bg-blue-50/20', border: 'border-blue-200', text: 'text-[#00558C]' },
+            { id: 'surgeries', label: 'Surgeries', subtitle: 'Interventions', icon: <Scissors size={16} />, bg: 'bg-orange-50/10', border: 'border-orange-100', text: 'text-[#D84315]' },
+            { id: 'therapies', label: 'Therapies', subtitle: 'Treatment', icon: <Pill size={16} />, bg: 'bg-teal-50/10', border: 'border-teal-100', text: 'text-[#00838F]' },
+            { id: 'career', label: 'Career', subtitle: 'Research', icon: <Briefcase size={16} />, bg: 'bg-orange-50/30', border: 'border-orange-200', text: 'text-[#F26522]' }
+          ];
+
+          const handleZoom = (direction) => {
+            setZoomLevel(prev => {
+              const newZoom = direction === 'in' ? prev * 1.2 : prev * 0.8;
+              return Math.max(50, Math.min(newZoom, 400));
+            });
+          };
+
+          const resetView = () => {
+            setZoomLevel(55);
+            if (scrollContainerRef.current) {
+                const yearsFromStart = 2004 - startYear;
+                scrollContainerRef.current.scrollLeft = yearsFromStart * 55;
+            }
+          };
+
+          const processedTracks = useMemo(() => {
+            return tracks.map(track => {
+              const trackEvents = events.filter(e => e.category === track.id)
+                .sort((a, b) => getDecimalYear(a.year, a.month) - getDecimalYear(b.year, b.month));
+
+              const lanes = [];
+              const eventsWithLayout = trackEvents.map(event => {
+                const start = getDecimalYear(event.year, event.month);
+                let end = event.endYear ? getDecimalYear(event.endYear, event.endMonth) : start;
+                const collisionEnd = (event.type === 'milestone' || event.type === 'surgery') ? start + 2.5 : end + 0.5;
+
+                let laneIndex = 0;
+                while (true) {
+                   if (!lanes[laneIndex] || lanes[laneIndex] <= start) {
+                     lanes[laneIndex] = collisionEnd;
+                     break;
+                   }
+                   laneIndex++;
+                }
+                const leftPct = ((start - startYear) / totalYears) * 100;
+                const widthPct = event.type === 'range' ? ((end - start) / totalYears) * 100 : 0;
+                return { ...event, start, end, laneIndex, leftPct, widthPct };
+              });
+              return { ...track, events: eventsWithLayout, height: Math.max(lanes.length, 1) * 38 + 16 };
+            });
+          }, [zoomLevel]);
+
+          const gridMarkers = useMemo(() => Array.from({ length: totalYears + 1 }).map((_, i) => startYear + i), []);
+
+          return (
+            <div className="flex flex-col h-screen bg-white font-sans text-[#333] overflow-hidden selection:bg-blue-100">
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-slate-200 bg-white z-20 flex justify-between items-center shadow-sm">
+                <div className="flex items-center gap-3">
+                    <div className="w-1.5 h-12 bg-[#00558C]"></div> 
+                    <div>
+                        <h1 className="text-xl md:text-2xl font-bold tracking-tight text-[#00558C] uppercase">Life & Career Trajectory</h1>
+                        <p className="text-xs text-slate-500 font-medium tracking-wide">Cara M. Antonaccio, PhD, MSPH, BS, BA</p>
+                    </div>
+                </div>
+                <div className="flex gap-2">
+                    <button onClick={() => handleZoom('out')} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400" title="Zoom Out"><Minus size={16} /></button>
+                    <button onClick={resetView} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400" title="Reset View"><RefreshCw size={16} /></button>
+                    <button onClick={() => handleZoom('in')} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400" title="Zoom In"><Plus size={16} /></button>
+                </div>
+              </div>
+
+              {/* Main Content */}
+              <div className="flex-grow flex flex-col relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-32 bg-white border-r border-slate-200 z-20 shadow-sm pointer-events-none"></div>
+                <div ref={scrollContainerRef} className="flex-grow overflow-x-auto overflow-y-hidden relative bg-white custom-scrollbar">
+                    <div style={{ width: `${totalYears * zoomLevel}px`, minWidth: '100%' }}>
+                        {/* Years */}
+                        <div className="h-10 bg-white border-b border-slate-200 relative ml-32 sticky top-0 z-10">
+                            {gridMarkers.map((year) => {
+                                const left = ((year - startYear) / totalYears) * 100;
+                                return (
+                                    <div key={year} className="absolute bottom-0 h-3 border-l border-slate-300 transform -translate-x-px" style={{ left: `${left}%` }}>
+                                        <span className="absolute -top-4 -left-3 text-[10px] font-bold text-[#00558C] select-none">{year}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        
+                        {/* Tracks */}
+                        <div className="relative">
+                            <div className="absolute inset-0 ml-32 pointer-events-none z-0">
+                                {gridMarkers.map((year) => {
+                                    const left = ((year - startYear) / totalYears) * 100;
+                                    return <div key={year} className={`absolute top-0 bottom-0 border-l ${year % 2 === 0 ? 'border-slate-100' : 'border-slate-50 dashed'}`} style={{ left: `${left}%` }} />;
+                                })}
+                            </div>
+
+                            {processedTracks.map((track) => (
+                                <div key={track.id} className={`relative w-full border-b border-slate-100 flex ${track.bg}`} style={{ minHeight: `${track.height}px` }}>
+                                    <div className="w-32 flex-shrink-0 flex flex-col justify-center items-center p-4 z-20 sticky left-0 select-none bg-white/90 backdrop-blur-sm border-r border-slate-100">
+                                        <div className={`mb-2 p-2.5 rounded-full bg-white border border-slate-100 ${track.text}`}>
+                                            {React.cloneElement(track.icon, { size: 16 })}
+                                        </div>
+                                        <span className={`text-xs font-bold uppercase tracking-tight ${track.text}`}>{track.label}</span>
+                                        <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mt-0.5 text-center">{track.subtitle}</span>
+                                    </div>
+
+                                    <div className="flex-grow relative mx-4 my-3">
+                                        {track.events.map((event) => {
+                                            const topPos = event.laneIndex * 38 + 8;
+                                            const isSurgery = event.type === 'surgery';
+                                            const isRange = event.type === 'range';
+                                            const styles = PALETTE[event.category] || PALETTE.career;
+                                            
+                                            let labelClass = 'bottom-full mb-2 left-1/2 -translate-x-1/2';
+                                            if (event.labelPlacement === 'top-left') labelClass = 'bottom-full mb-2 right-1/2 translate-x-2';
+                                            if (event.labelPlacement === 'top-right') labelClass = 'bottom-full mb-2 left-1/2 -translate-x-2';
+                                            if (event.labelPlacement === 'bottom-right') labelClass = 'top-full mt-2 left-1/2 -translate-x-2';
+                                            if (event.labelPlacement === 'bottom-left') labelClass = 'top-full mt-2 right-1/2 translate-x-2';
+
+                                            return (
+                                                <div 
+                                                    key={event.id}
+                                                    className="absolute transition-all duration-300 group"
+                                                    style={{ 
+                                                        left: `${event.leftPct}%`, top: `${topPos}px`,
+                                                        width: isRange ? `${Math.max(event.widthPct, 0.5)}%` : 'auto',
+                                                        zIndex: selectedEvent?.id === event.id ? 50 : 10
+                                                    }}
+                                                    onClick={(e) => { e.stopPropagation(); setSelectedEvent(event); }}
+                                                    onMouseEnter={() => setHoveredEventId(event.id)}
+                                                    onMouseLeave={() => setHoveredEventId(null)}
+                                                >
+                                                    {isRange ? (
+                                                        <div className={`relative h-8 rounded-sm border shadow-sm cursor-pointer flex items-center px-3 ${event.style === 'dashed' ? 'bg-transparent border-dashed border-2 opacity-70' : 'hover:ring-1 ring-offset-1'}`}
+                                                            style={{ backgroundColor: event.style === 'dashed' ? 'transparent' : styles.light, borderColor: styles.border, color: styles.main, outlineColor: styles.main }}>
+                                                            <span className="text-[10px] font-bold truncate w-full select-none uppercase tracking-tight">{event.title}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="relative flex flex-col items-center cursor-pointer group/point pt-2 -translate-x-1/2">
+                                                            <div className={`relative z-10 flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-125 ${isSurgery ? 'w-4 h-4 rotate-45 border border-white ring-1 ring-orange-200' : 'w-3.5 h-3.5 rounded-full border-2 border-white'}`}
+                                                                style={{ backgroundColor: isSurgery ? '#F26522' : styles.main }}>
+                                                                {isSurgery && <Scissors size={8} className="text-white -rotate-45" strokeWidth={3} />}
+                                                            </div>
+                                                            <div className={`absolute px-2 py-0.5 rounded-sm text-[9px] font-bold border shadow-sm backdrop-blur-sm z-20 whitespace-nowrap select-none uppercase tracking-tight bg-white/95 border-slate-200 text-slate-600 group-hover:text-white transition-colors ${labelClass}`}
+                                                                style={{ '--hover-bg': styles.main }}>
+                                                                <span className="group-hover:text-white">{event.title}</span>
+                                                                <style>{`.group:hover .group\\/point div:last-child { background-color: ${styles.main} !important; border-color: ${styles.main} !important; color: white !important; }`}</style>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+              </div>
+
+              {/* Slide Over */}
+              <div className={`fixed inset-y-0 right-0 w-full md:w-[400px] bg-white shadow-2xl border-l border-slate-200 transform transition-transform duration-300 ease-in-out z-50 ${selectedEvent ? 'translate-x-0' : 'translate-x-full'}`}>
+                {selectedEvent && (
+                    <div className="h-full flex flex-col font-sans">
+                        <div className="h-3 w-full flex-shrink-0" style={{ backgroundColor: PALETTE[selectedEvent.category]?.main || PALETTE.career.main }}></div>
+                        <div className="p-8 flex-grow overflow-y-auto bg-slate-50">
+                            <button onClick={() => setSelectedEvent(null)} className="absolute top-6 right-6 p-2 bg-white rounded-full border border-slate-200 hover:bg-slate-100 shadow-sm transition-colors text-slate-500"><X size={18} /></button>
+                            <div className="flex items-center gap-2 mb-4">
+                                <Calendar size={14} style={{ color: PALETTE[selectedEvent.category]?.main }} />
+                                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: PALETTE[selectedEvent.category]?.main }}>{selectedEvent.year} {selectedEvent.endYear && `— ${selectedEvent.endYear}`}</span>
+                            </div>
+                            <h2 className="text-2xl font-bold text-slate-900 mb-2 leading-tight">{selectedEvent.title}</h2>
+                            {selectedEvent.location && <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wide mb-6"><MapPin size={12} /> {selectedEvent.location}</div>}
+                            <div className="bg-white p-6 rounded-sm border-l-4 border-y border-r border-slate-200 shadow-sm mb-6" style={{ borderLeftColor: PALETTE[selectedEvent.category]?.main }}>
+                                <p className="m-0 text-slate-700 text-sm leading-relaxed font-medium">{selectedEvent.description}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<LifeTimeline />);
+    </script>
+</body>
+</html>
